@@ -29,7 +29,7 @@ jobs:
   - bash: |
       source /emsdk/emsdk_env.sh
       sudo npm -g install typescript
-      npm install
+      sudo npm install
       make
       mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.1.0-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
 
