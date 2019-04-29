@@ -22,8 +22,6 @@ EMSCRIPTEN ?= /usr/bin
 
 EMCC = '$(EMSCRIPTEN)/emcc'
 
-TSC = node_modules/typescript/bin/tsc
-
 CFLAGS = \
 	-D_HAVE_SQLITE_CONFIG_H \
 	-Isrc/c -I'deps/$(SQLITE_AMALGAMATION)'
@@ -39,7 +37,6 @@ EMFLAGS = \
 	-s MODULARIZE_INSTANCE=1 \
 	-s EXPORT_NAME="'SQLite'" \
 	 --memory-init-file 0 \
-	 --post-js temp/api.js \
 
 EMFLAGS_DEBUG = \
 	-s INLINING_LIMIT=10 \
@@ -120,9 +117,6 @@ temp/bc/wasmhelpers.bc: src/c/wasmhelpers.c src/c/config.h
 	mkdir -p temp/bc
 	$(EMCC) $(CFLAGS) -s LINKABLE=1 src/c/wasmhelpers.c -o $@
 
-temp/api.js: $(wildcard src/ts/*)
-	$(TSC)
-
 ## debug
 .PHONY: clean-debug
 clean-debug:
@@ -131,7 +125,7 @@ clean-debug:
 .PHONY: debug
 debug: debug/sqlite3.html
 
-debug/sqlite3.html: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON) temp/api.js
+debug/sqlite3.html: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p debug
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DEBUG) $(BITCODE_FILES) -o $@
 
@@ -144,6 +138,6 @@ clean-dist:
 .PHONY: dist
 dist: dist/sqlite3.html
 
-dist/sqlite3.html: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON) temp/api.js
+dist/sqlite3.html: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p dist
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DIST) $(BITCODE_FILES) -o $@
