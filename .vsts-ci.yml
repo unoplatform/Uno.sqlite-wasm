@@ -1,27 +1,36 @@
-phases:
-- phase: Linux
-  variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
-    NUGET_HTTP_CACHE_PATH: $(Agent.WorkFolder)\.nuget-http-cache
+resources:
+  containers:
+  - container: nv-bionic-wasm
+    image: nventive/wasm-build:1.2
+
+jobs:
+- job: Linux
+
+  container: nv-bionic-wasm
+
+  pool:
+    vmImage: 'ubuntu-16.04'
 
   steps:
   - checkout: self
     clean: true
 
-  - bash: |
-      cd $(Agent.WorkFolder)
-      git clone https://github.com/juj/emsdk.git
-      cd emsdk
-      ./emsdk install latest
-      ./emsdk activate latest
-    displayName: 'Run make'
+  - task: GitVersion@4
+    inputs:
+      updateAssemblyInfo: false
 
   - bash: |
-      source $(Agent.WorkFolder)/emsdk/emsdk_env.sh
-      npm -g install typescript
-      npm install
+      sudo chmod -R 777 /emsdk
+      cd /emsdk
+      sudo ./emsdk activate sdk-1.38.28-64bit
+
+    displayName: Configure Emscripten
+
+  - bash: |
+      source /emsdk/emsdk_env.sh
       make
-      mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.0.0-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
+      mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.1.0-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
+
     displayName: 'Run make'
 
   - task: CopyFiles@2
