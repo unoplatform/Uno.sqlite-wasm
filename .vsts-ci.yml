@@ -20,7 +20,7 @@ jobs:
       updateAssemblyInfo: false
 
   - bash: |
-      source $(Agent.WorkFolder)/emsdk/emsdk_env.sh
+      source /emsdk/emsdk_env.sh
       npm -g install typescript
       npm install
       make
