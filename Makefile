@@ -36,7 +36,8 @@ EMFLAGS = \
 	-s WASM=1 \
 	-s MODULARIZE_INSTANCE=1 \
 	-s EXPORT_NAME="'SQLite'" \
-	 --memory-init-file 0 \
+	-s LEGALIZE_JS_FFI=0 \
+	--memory-init-file 0 \
 
 EMFLAGS_DEBUG = \
 	-s INLINING_LIMIT=10 \
