@@ -20,6 +20,6 @@
     </contentFiles>
   </metadata>
   <files>
-    <file src="../../dist/sqlite3.wasm" target="contentFiles/any/any" />
+    <file src="../../dist/e_sqlite3.wasm" target="contentFiles/any/any" />
   </files>
 </package>

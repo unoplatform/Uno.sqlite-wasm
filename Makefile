@@ -124,9 +124,9 @@ clean-debug:
 	rm -rf debug
 
 .PHONY: debug
-debug: debug/sqlite3.html
+debug: debug/e_sqlite3.wasm
 
-debug/sqlite3.html: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+debug/e_sqlite3.wasm: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p debug
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DEBUG) $(BITCODE_FILES) -o $@
 
@@ -137,8 +137,8 @@ clean-dist:
 	rm -rf dist
 
 .PHONY: dist
-dist: dist/sqlite3.html
+dist: dist/e_sqlite3.wasm
 
-dist/sqlite3.html: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+dist/e_sqlite3.wasm: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p dist
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DIST) $(BITCODE_FILES) -o $@
