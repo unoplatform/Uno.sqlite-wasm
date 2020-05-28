@@ -17,27 +17,15 @@ EXPORTED_FUNCTIONS_JSON = src/exported_functions.json
 BITCODE_FILES = temp/bc/sqlite3.bc temp/bc/extension-functions.bc temp/bc/wasmhelpers.bc
 
 # build options
-
-EMSCRIPTEN ?= /usr/bin
-
-EMCC = '$(EMSCRIPTEN)/emcc'
+EMCC = emcc
 
 CFLAGS = \
 	-D_HAVE_SQLITE_CONFIG_H \
 	-Isrc/c -I'deps/$(SQLITE_AMALGAMATION)'
 
 EMFLAGS = \
-	-s SIDE_MODULE=1 \
-	-s EXPORT_ALL=1 \
-	-s ALLOW_MEMORY_GROWTH=1 \
-	-s EXPORTED_FUNCTIONS="`cat $(EXPORTED_FUNCTIONS_JSON) | tr '\n' ' '`" \
-	-s RESERVED_FUNCTION_POINTERS=64 \
-	-s EXTRA_EXPORTED_RUNTIME_METHODS="[\"cwrap\", \"getValue\", \"setValue\", \"addFunction\", \"removeFunction\", \"UTF8ToString\", \"lengthBytesUTF8\", \"stringToUTF8\", \"print\"]" \
 	-s WASM=1 \
-	-s MODULARIZE_INSTANCE=1 \
-	-s EXPORT_NAME="'SQLite'" \
-	-s LEGALIZE_JS_FFI=0 \
-	--memory-init-file 0 \
+	-s LEGALIZE_JS_FFI=0
 
 EMFLAGS_DEBUG = \
 	-s INLINING_LIMIT=10 \
@@ -124,21 +112,20 @@ clean-debug:
 	rm -rf debug
 
 .PHONY: debug
-debug: debug/e_sqlite3.wasm
+debug: debug/e_sqlite3.a
 
-debug/e_sqlite3.wasm: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+debug/e_sqlite3.a: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p debug
-	$(EMCC) $(EMFLAGS) $(EMFLAGS_DEBUG) $(BITCODE_FILES) -o $@
+	$(EMCC) $(EMFLAGS) $(EMFLAGS_DEBUG) $(BITCODE_FILES) -r -o $@
 
 ## dist
-
 .PHONY: clean-dist
 clean-dist:
 	rm -rf dist
 
 .PHONY: dist
-dist: dist/e_sqlite3.wasm
+dist: dist/e_sqlite3.a
 
-dist/e_sqlite3.wasm: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+dist/e_sqlite3.a: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p dist
-	$(EMCC) $(EMFLAGS) $(EMFLAGS_DIST) $(BITCODE_FILES) -o $@
+	$(EMCC) $(EMFLAGS) $(EMFLAGS_DIST) $(BITCODE_FILES) -r -o $@

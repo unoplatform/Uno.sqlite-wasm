@@ -1,15 +1,10 @@
-resources:
-  containers:
-  - container: nv-bionic-wasm
-    image: nventive/wasm-build:1.2
 
 jobs:
 - job: Linux
-
-  container: nv-bionic-wasm
+  container: unoplatform/wasm-build:2.0
 
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-latest'
 
   steps:
   - checkout: self
@@ -19,15 +14,18 @@ jobs:
     inputs:
       updateAssemblyInfo: false
 
+  
   - bash: |
-      sudo chmod -R 777 /emsdk
-      cd /emsdk
-      sudo ./emsdk activate sdk-1.38.28-64bit
+      cd ~
+      git clone https://github.com/emscripten-core/emsdk
+      cd emsdk
+      ./emsdk install sdk-1.39.11
+      ./emsdk activate sdk-1.39.11
 
-    displayName: Configure Emscripten
+    displayName: 'Setup Emscripten'
 
   - bash: |
-      source /emsdk/emsdk_env.sh
+      source ~/emsdk/emsdk_env.sh
       make
       mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.1.0-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
 

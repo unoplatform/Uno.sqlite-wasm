@@ -9,17 +9,16 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/nventive/uno.sqlite-wasm</projectUrl>
     <iconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</iconUrl>
-    <description>A compilation of the SQLite database engine for WebAssembly</description>
-    <copyright>Copyright (C) 2015-2018 nventive inc. - all rights reserved</copyright>
+    <description>The SQLite database engine for WebAssembly</description>
+    <copyright>Copyright (C) 2015-2020 nventive inc. - all rights reserved</copyright>
     <repository type="git" url="https://github.com/nventive/Uno.sqlite-wasm.git" />
 
     <contentFiles>
       <!-- Include Assets as Embedded Resource and Content so that the Uno.Wasm.Bootstrap picks those up -->
-      <files include="any/any/**/*.js" buildAction="EmbeddedResource" />
-      <files include="any/any/**/*.wasm" buildAction="Content" />
+      <files include="any/any/**/*.a" buildAction="Content" />
     </contentFiles>
   </metadata>
   <files>
-    <file src="../../dist/e_sqlite3.wasm" target="contentFiles/any/any" />
+    <file src="../../dist/e_sqlite3.a" target="contentFiles/any/any" />
   </files>
 </package>
