@@ -1,8 +1,8 @@
 # dependencies
 
-SQLITE_AMALGAMATION = sqlite-amalgamation-3200100
-SQLITE_AMALGAMATION_ZIP_URL = https://www.sqlite.org/2017/sqlite-amalgamation-3200100.zip
-SQLITE_AMALGAMATION_ZIP_SHA1 = e9dc46fc55a512b5d2ef97fd548b7ab4beb2d3e3
+SQLITE_AMALGAMATION = sqlite-amalgamation-3320300
+SQLITE_AMALGAMATION_ZIP_URL = https://www.sqlite.org/2020/sqlite-amalgamation-3320300.zip
+SQLITE_AMALGAMATION_ZIP_SHA1 = 0c805bea134712a903290a26b2a61c3a8a3bd8cc
 
 EXTENSION_FUNCTIONS = extension-functions.c
 EXTENSION_FUNCTIONS_URL = http://www.sqlite.org/contrib/download/extension-functions.c?get=25
@@ -23,9 +23,7 @@ CFLAGS = \
 	-D_HAVE_SQLITE_CONFIG_H \
 	-Isrc/c -I'deps/$(SQLITE_AMALGAMATION)'
 
-EMFLAGS = \
-	-s WASM=1 \
-	-s LEGALIZE_JS_FFI=0
+EMFLAGS = 
 
 EMFLAGS_DEBUG = \
 	-s INLINING_LIMIT=10 \
@@ -92,19 +90,19 @@ clean-temp:
 
 temp/bc/shell.bc: deps/$(SQLITE_AMALGAMATION) src/c/config.h
 	mkdir -p temp/bc
-	$(EMCC) $(CFLAGS) 'deps/$(SQLITE_AMALGAMATION)/shell.c' -o $@
+	$(EMCC) $(CFLAGS) 'deps/$(SQLITE_AMALGAMATION)/shell.c' -r -o $@
 
 temp/bc/sqlite3.bc: deps/$(SQLITE_AMALGAMATION) src/c/config.h
 	mkdir -p temp/bc
-	$(EMCC) $(CFLAGS) -s LINKABLE=1 'deps/$(SQLITE_AMALGAMATION)/sqlite3.c' -o $@
+	$(EMCC) $(CFLAGS) -s LINKABLE=1 'deps/$(SQLITE_AMALGAMATION)/sqlite3.c' -r -o $@
 
 temp/bc/extension-functions.bc: deps/$(EXTENSION_FUNCTIONS) src/c/config.h
 	mkdir -p temp/bc
-	$(EMCC) $(CFLAGS) -s LINKABLE=1 'deps/$(EXTENSION_FUNCTIONS)' -o $@
+	$(EMCC) $(CFLAGS) -s LINKABLE=1 'deps/$(EXTENSION_FUNCTIONS)' -r -o $@
 
 temp/bc/wasmhelpers.bc: src/c/wasmhelpers.c src/c/config.h
 	mkdir -p temp/bc
-	$(EMCC) $(CFLAGS) -s LINKABLE=1 src/c/wasmhelpers.c -o $@
+	$(EMCC) $(CFLAGS) -s LINKABLE=1 src/c/wasmhelpers.c -r -o $@
 
 ## debug
 .PHONY: clean-debug
@@ -112,9 +110,9 @@ clean-debug:
 	rm -rf debug
 
 .PHONY: debug
-debug: debug/e_sqlite3.a
+debug: debug/e_sqlite3.bc
 
-debug/e_sqlite3.a: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+debug/e_sqlite3.bc: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p debug
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DEBUG) $(BITCODE_FILES) -r -o $@
 
@@ -124,8 +122,8 @@ clean-dist:
 	rm -rf dist
 
 .PHONY: dist
-dist: dist/e_sqlite3.a
+dist: dist/e_sqlite3.bc
 
-dist/e_sqlite3.a: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+dist/e_sqlite3.bc: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p dist
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DIST) $(BITCODE_FILES) -r -o $@
