@@ -6,9 +6,7 @@
 #define SQLITE_HAVE_MALLOC_USABLE_SIZE  1
 #define SQLITE_HAVE_STRCHRNUL           1
 #define SQLITE_LIKE_DOESNT_MATCH_BLOBS  1
-#define SQLITE_OMIT_DECLTYPE            1
-#define SQLITE_OMIT_DEPRECATED          1
-#define SQLITE_OMIT_LOAD_EXTENSION      1
 #define SQLITE_TEMP_STORE               2
 #define SQLITE_THREADSAFE               0
 #define SQLITE_USE_URI                  1
+#define SQLITE_ENABLE_COLUMN_METADATA   1
