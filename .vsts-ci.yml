@@ -19,15 +19,15 @@ jobs:
       cd ~
       git clone https://github.com/emscripten-core/emsdk
       cd emsdk
-      ./emsdk install sdk-1.39.11
-      ./emsdk activate sdk-1.39.11
+      ./emsdk install sdk-2.0.5
+      ./emsdk activate sdk-2.0.5
 
     displayName: 'Setup Emscripten'
 
   - bash: |
       source ~/emsdk/emsdk_env.sh
       make
-      mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.1.0-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
+      mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.1.1-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
 
     displayName: 'Run make'
 
