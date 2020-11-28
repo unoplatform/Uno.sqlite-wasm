@@ -19,6 +19,6 @@
     </contentFiles>
   </metadata>
   <files>
-    <file src="../../dist/e_sqlite3.bc" target="contentFiles/any/any" />
+    <file src="../../native-artifacts/**/*" target="contentFiles/any/any" />
   </files>
 </package>
