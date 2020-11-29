@@ -1,44 +1,78 @@
 
 jobs:
-- job: Linux
+- job: Native_Build
   container: unoplatform/wasm-build:2.0
 
   pool:
     vmImage: 'ubuntu-latest'
 
+  strategy:
+    matrix:
+      1_39_11:
+        EMSCRIPTEN_VERSION: 1.39.11
+
+      1_40_0:
+        EMSCRIPTEN_VERSION: 1.40.0
+
+      2_0_5:
+        EMSCRIPTEN_VERSION: 2.0.5
+
+      2_0_6:
+        EMSCRIPTEN_VERSION: 2.0.6
+
+      2_0_9:
+        EMSCRIPTEN_VERSION: 2.0.9
+
+
   steps:
   - checkout: self
     clean: true
-
-  - task: GitVersion@4
-    inputs:
-      updateAssemblyInfo: false
-
   
   - bash: |
       cd ~
-      git clone https://github.com/emscripten-core/emsdk
+      git clone --branch $(EMSCRIPTEN_VERSION) https://github.com/emscripten-core/emsdk
       cd emsdk
-      ./emsdk install sdk-2.0.5
-      ./emsdk activate sdk-2.0.5
+      ./emsdk install sdk-$(EMSCRIPTEN_VERSION)
+      ./emsdk activate sdk-$(EMSCRIPTEN_VERSION)
 
     displayName: 'Setup Emscripten'
 
   - bash: |
       source ~/emsdk/emsdk_env.sh
       make
-      mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.1.1-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
+      # Use the multi-version convention https://github.com/unoplatform/uno.wasm.bootstrap#static-linking-multi-version-support
+      SQLITE3_DIST_PATH=$(build.artifactstagingdirectory)/native/e_sqlite3.bc/$(EMSCRIPTEN_VERSION)
+      mkdir -p $SQLITE3_DIST_PATH
+      cp dist/e_sqlite3.bc $SQLITE3_DIST_PATH
 
     displayName: 'Run make'
 
-  - task: CopyFiles@2
+  - task: PublishBuildArtifacts@1
+    # https://developercommunity.visualstudio.com/content/problem/284991/public-vsts-previouw-cant-set-build-number-of-pr-b.html
+    condition: eq(variables['System.PullRequest.IsFork'], 'False')
     inputs:
-      SourceFolder: $(build.sourcesdirectory)/dist
-      Contents: '*.*'
-      TargetFolder: $(build.artifactstagingdirectory)/dist
-      CleanTargetFolder: false
-      OverWrite: false
-      flattenFolders: false
+      PathtoPublish: $(build.artifactstagingdirectory)
+      ArtifactName: native-artifacts
+      ArtifactType: Container
+
+- job: Package
+  dependsOn: Native_Build
+
+  container: unoplatform/wasm-build:3.0
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - task: DownloadBuildArtifacts@0
+    inputs:
+        artifactName: native-artifacts
+        downloadPath: '$(build.sourcesdirectory)'
+
+  - bash: |
+      mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.1.1-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
+
+    displayName: 'Run make'
 
   - task: PublishBuildArtifacts@1
     # https://developercommunity.visualstudio.com/content/problem/284991/public-vsts-previouw-cant-set-build-number-of-pr-b.html
