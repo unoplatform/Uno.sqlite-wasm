@@ -1,8 +1,8 @@
 # dependencies
 
-SQLITE_AMALGAMATION = sqlite-amalgamation-3320300
-SQLITE_AMALGAMATION_ZIP_URL = https://www.sqlite.org/2020/sqlite-amalgamation-3320300.zip
-SQLITE_AMALGAMATION_ZIP_SHA1 = 0c805bea134712a903290a26b2a61c3a8a3bd8cc
+SQLITE_AMALGAMATION = sqlite-amalgamation-3340100
+SQLITE_AMALGAMATION_ZIP_URL = https://www.sqlite.org/2021/sqlite-amalgamation-3340100.zip
+SQLITE_AMALGAMATION_ZIP_SHA1 = adf5f5f2b859a9fcbf5fdf6f87b2cd42949c267c
 
 EXTENSION_FUNCTIONS = extension-functions.c
 EXTENSION_FUNCTIONS_URL = http://www.sqlite.org/contrib/download/extension-functions.c?get=25
@@ -110,9 +110,9 @@ clean-debug:
 	rm -rf debug
 
 .PHONY: debug
-debug: debug/e_sqlite3.bc
+debug: debug/sqlite3.bc
 
-debug/e_sqlite3.bc: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+debug/sqlite3.bc: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p debug
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DEBUG) $(BITCODE_FILES) -r -o $@
 
@@ -122,8 +122,11 @@ clean-dist:
 	rm -rf dist
 
 .PHONY: dist
-dist: dist/e_sqlite3.bc
+dist: dist/sqlite3.bc
 
-dist/e_sqlite3.bc: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+# The name of this binary is aligned with the SQLitePCLRaw.bundle_sqlite3 
+# imports, which uses "sqlite3".
+# See https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/custom-versions?tabs=netcore-cli#bundles for more details.
+dist/sqlite3.bc: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p dist
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DIST) $(BITCODE_FILES) -r -o $@

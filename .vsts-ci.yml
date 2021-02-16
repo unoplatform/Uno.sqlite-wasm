@@ -23,6 +23,11 @@ jobs:
       2_0_9:
         EMSCRIPTEN_VERSION: 2.0.9
 
+      2_0_11:
+        EMSCRIPTEN_VERSION: 2.0.11
+
+      2_0_12:
+        EMSCRIPTEN_VERSION: 2.0.12
 
   steps:
   - checkout: self
@@ -43,7 +48,7 @@ jobs:
       # Use the multi-version convention https://github.com/unoplatform/uno.wasm.bootstrap#static-linking-multi-version-support
       SQLITE3_DIST_PATH=$(build.artifactstagingdirectory)/native/e_sqlite3.bc/$(EMSCRIPTEN_VERSION)
       mkdir -p $SQLITE3_DIST_PATH
-      cp dist/e_sqlite3.bc $SQLITE3_DIST_PATH
+      cp dist/sqlite3.bc $SQLITE3_DIST_PATH
 
     displayName: 'Run make'
 
@@ -70,7 +75,7 @@ jobs:
         downloadPath: '$(build.sourcesdirectory)'
 
   - bash: |
-      mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -Version "1.1.1-dev.$(Build.BuildId)" -OutputDirectory "$(build.artifactstagingdirectory)"
+      mono src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -OutputDirectory "$(build.artifactstagingdirectory)"
 
     displayName: 'Run make'
 
