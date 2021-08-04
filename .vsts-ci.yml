@@ -49,7 +49,7 @@ jobs:
       source ~/emsdk/emsdk_env.sh
       make
       # Use the multi-version convention https://github.com/unoplatform/uno.wasm.bootstrap#static-linking-multi-version-support
-      SQLITE3_DIST_PATH=$(build.artifactstagingdirectory)/native/e_sqlite3.bc/$(EMSCRIPTEN_VERSION)
+      SQLITE3_DIST_PATH=$(build.artifactstagingdirectory)/native/sqlite3.bc/$(EMSCRIPTEN_VERSION)
       mkdir -p $SQLITE3_DIST_PATH
       cp dist/sqlite3.bc $SQLITE3_DIST_PATH
 
