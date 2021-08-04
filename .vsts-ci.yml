@@ -32,6 +32,9 @@ jobs:
       2_0_23:
         EMSCRIPTEN_VERSION: 2.0.23
 
+      2_0_26:
+        EMSCRIPTEN_VERSION: 2.0.26
+
   steps:
   - checkout: self
     clean: true
