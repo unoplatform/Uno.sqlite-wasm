@@ -32,6 +32,9 @@ jobs:
       2_0_23:
         EMSCRIPTEN_VERSION: 2.0.23
 
+      2_0_26:
+        EMSCRIPTEN_VERSION: 2.0.26
+
   steps:
   - checkout: self
     clean: true
@@ -49,7 +52,7 @@ jobs:
       source ~/emsdk/emsdk_env.sh
       make
       # Use the multi-version convention https://github.com/unoplatform/uno.wasm.bootstrap#static-linking-multi-version-support
-      SQLITE3_DIST_PATH=$(build.artifactstagingdirectory)/native/e_sqlite3.bc/$(EMSCRIPTEN_VERSION)
+      SQLITE3_DIST_PATH=$(build.artifactstagingdirectory)/native/sqlite3.bc/$(EMSCRIPTEN_VERSION)
       mkdir -p $SQLITE3_DIST_PATH
       cp dist/sqlite3.bc $SQLITE3_DIST_PATH
 
