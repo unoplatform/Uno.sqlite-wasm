@@ -111,3 +111,31 @@ jobs:
       with:
         name: nuget
         path: ./artifacts
+
+  ##
+  ## Release Job
+  ##
+  release_job:
+    if: github.event_name == 'push'
+    needs: [package]
+    runs-on: ubuntu-latest
+    environment:
+        name: Release
+
+    steps:
+    
+    - name: Download package
+      uses: actions/download-artifact@v2
+      with:
+        name: nuget
+        path: artifacts
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1
+      with:
+          dotnet-version: '3.1.x'
+
+    - name: NuGet Push
+      shell: pwsh
+      run: |
+        dotnet nuget push artifacts\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_ORG_API_KEY }}
