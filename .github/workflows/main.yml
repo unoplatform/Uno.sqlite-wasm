@@ -52,19 +52,21 @@ jobs:
           set -xe
           MAJOR_VERSION="$(printf '%s' "$EMSCRIPTEN_VERSION" | cut -c1)"
 
-          if [ -z $EMSCRIPTEN_THREADS ]; then
-            FEATURES_CONFIGURATION="mt";
+          if [ "$EMSCRIPTEN_THREADS" = "true" ]; then
+          FEATURES_CONFIGURATION="mt";
           else
-            FEATURES_CONFIGURATION="st";
+          FEATURES_CONFIGURATION="st";
           fi
           
-          if [ -z $EMSCRIPTEN_SIMD ]; then
+          if [ "$EMSCRIPTEN_SIMD" = 'true' ]; then
               FEATURES_CONFIGURATION="$FEATURES_CONFIGURATION,simd";
           fi
 
-          if [[ $MAJOR_VERSION -lt 3 && "$FEATURES_CONFIGURATION" -ne "st" ]]; then
-            echo "Skipping build for incompatible features"
-            exit 0;
+          if [ $MAJOR_VERSION -lt 3 ]; then
+              if [ "$FEATURES_CONFIGURATION" != "st" ]; then
+                  echo "Skipping build for incompatible features"
+                  exit 0;
+              fi
           fi
 
           source ~/emsdk/emsdk_env.sh
