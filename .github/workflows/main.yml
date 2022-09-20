@@ -53,27 +53,30 @@ jobs:
           MAJOR_VERSION="$(printf '%s' "$EMSCRIPTEN_VERSION" | cut -c1)"
 
           if [ "$EMSCRIPTEN_THREADS" = "true" ]; then
-          FEATURES_CONFIGURATION="mt";
+            FEATURES_CONFIGURATION="/mt";
           else
-          FEATURES_CONFIGURATION="st";
+            FEATURES_CONFIGURATION="/st";
           fi
           
           if [ "$EMSCRIPTEN_SIMD" = 'true' ]; then
-              FEATURES_CONFIGURATION="$FEATURES_CONFIGURATION,simd";
+            FEATURES_CONFIGURATION="$FEATURES_CONFIGURATION,simd";
           fi
 
           if [ $MAJOR_VERSION -lt 3 ]; then
-              if [ "$FEATURES_CONFIGURATION" != "st" ]; then
-                  echo "Skipping build for incompatible features"
-                  exit 0;
-              fi
+            if [ "$FEATURES_CONFIGURATION" != "/st" ]; then
+                echo "Skipping build for incompatible features"
+                exit 0;
+            fi
+            
+            # Preserve the boostrapper 3.3 and below format
+            unset FEATURES_CONFIGURATION
           fi
 
           source ~/emsdk/emsdk_env.sh
           mkdir -p $ARTIFACTS_PATH
           make
           # Use the multi-version convention https://github.com/unoplatform/uno.wasm.bootstrap#static-linking-multi-version-support
-          SQLITE3_DIST_PATH=$ARTIFACTS_PATH/native/sqlite3.bc/$EMSCRIPTEN_VERSION/$FEATURES_CONFIGURATION
+          SQLITE3_DIST_PATH=$ARTIFACTS_PATH/native/sqlite3.bc/$EMSCRIPTEN_VERSION$FEATURES_CONFIGURATION
           mkdir -p $SQLITE3_DIST_PATH
           cp dist/sqlite3.bc $SQLITE3_DIST_PATH
 
