@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    container: 'unoplatform/wasm-build:2.0'
+    
+    strategy:
+      matrix:
+        EMSCRIPTEN_VERSION: ['1.39.11','1.40.0','2.0.5','2.0.6','2.0.9','2.0.11','2.0.12','2.0.23','2.0.26','3.1.12']
+        EMSCRIPTEN_THREADS: ['true', '']
+        EMSCRIPTEN_SIMD: ['true', '']
+    env: 
+        ARTIFACTS_PATH: './artifacts'
+        
+    name: 'Build (emsdk:${{ matrix.EMSCRIPTEN_VERSION }} Threads:${{ matrix.EMSCRIPTEN_THREADS }} SIMD:${{ matrix.EMSCRIPTEN_SIMD }})'
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set Variable from current Commit
+        run: |
+          set -e
+          echo "EMSCRIPTEN_VERSION=${{ matrix.EMSCRIPTEN_VERSION }}" >> $GITHUB_ENV
+          echo "EMSCRIPTEN_THREADS=${{ matrix.EMSCRIPTEN_THREADS }}" >> $GITHUB_ENV
+          echo "EMSCRIPTEN_SIMD=${{ matrix.EMSCRIPTEN_SIMD }}" >> $GITHUB_ENV
+
+      - name: 'Setup Emscripten'
+        shell: bash
+        run: |
+          set -e
+          cd ~
+          git clone --branch $EMSCRIPTEN_VERSION https://github.com/emscripten-core/emsdk
+          cd emsdk
+          ./emsdk install $EMSCRIPTEN_VERSION
+          ./emsdk activate $EMSCRIPTEN_VERSION
+          
+      - name: 'Build SQLite'
+        shell: bash
+        run: |
+          set -xe
+          MAJOR_VERSION="$(printf '%s' "$EMSCRIPTEN_VERSION" | cut -c1)"
+
+          if [ "$EMSCRIPTEN_THREADS" = "true" ]; then
+            FEATURES_CONFIGURATION="/mt";
+          else
+            FEATURES_CONFIGURATION="/st";
+          fi
+          
+          if [ "$EMSCRIPTEN_SIMD" = 'true' ]; then
+            FEATURES_CONFIGURATION="$FEATURES_CONFIGURATION,simd";
+          fi
+
+          if [ $MAJOR_VERSION -lt 3 ]; then
+            if [ "$FEATURES_CONFIGURATION" != "/st" ]; then
+                echo "Skipping build for incompatible features"
+                exit 0;
+            fi
+            
+            # Preserve the boostrapper 3.3 and below format
+            unset FEATURES_CONFIGURATION
+          fi
+
+          source ~/emsdk/emsdk_env.sh
+          mkdir -p $ARTIFACTS_PATH
+          make
+          # Use the multi-version convention https://github.com/unoplatform/uno.wasm.bootstrap#static-linking-multi-version-support
+          SQLITE3_DIST_PATH=$ARTIFACTS_PATH/native/sqlite3.bc/$EMSCRIPTEN_VERSION$FEATURES_CONFIGURATION
+          mkdir -p $SQLITE3_DIST_PATH
+          cp dist/sqlite3.bc $SQLITE3_DIST_PATH
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: sqlite-binaries
+          path: ./artifacts
+
+  package:
+    needs: build
+    runs-on: ubuntu-latest
+    container: 'unoplatform/wasm-build:2.0'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download binaries
+      uses: actions/download-artifact@v2
+      with:
+        name: sqlite-binaries
+        path: ./native-artifacts
+          
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version:  6.0.400
+        
+    - name: Build nuget
+      run: |
+        mono $GITHUB_WORKSPACE/src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -OutputDirectory "$GITHUB_WORKSPACE/artifacts"
+
+    - uses: actions/upload-artifact@v2
+      if: ${{ always() }}
+      with:
+        name: nuget
+        path: ./artifacts
+
+  ##
+  ## Release Job
+  ##
+  release_job:
+    if: github.event_name == 'push'
+    needs: [package]
+    runs-on: ubuntu-latest
+    environment:
+        name: Release
+
+    steps:
+    
+    - name: Download package
+      uses: actions/download-artifact@v2
+      with:
+        name: nuget
+        path: artifacts
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1
+      with:
+          dotnet-version: '3.1.x'
+
+    - name: NuGet Push
+      shell: pwsh
+      run: |
+        dotnet nuget push artifacts\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_ORG_API_KEY }}
