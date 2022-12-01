@@ -96,19 +96,19 @@ deps/$(EXTENSION_FUNCTIONS): cache/$(EXTENSION_FUNCTIONS)
 clean-temp:
 	rm -rf temp
 
-temp/bc/shell.bc: deps/$(SQLITE_AMALGAMATION) src/c/config.h
+temp/bc/shell.bc: deps/$(SQLITE_AMALGAMATION) src/c/sqlite_cfg.h
 	mkdir -p temp/bc
 	$(EMCC) $(CFLAGS) 'deps/$(SQLITE_AMALGAMATION)/shell.c' -r -o $@
 
-temp/bc/sqlite3.bc: deps/$(SQLITE_AMALGAMATION) src/c/config.h
+temp/bc/sqlite3.bc: deps/$(SQLITE_AMALGAMATION) src/c/sqlite_cfg.h
 	mkdir -p temp/bc
 	$(EMCC) $(CFLAGS) -s LINKABLE=1 'deps/$(SQLITE_AMALGAMATION)/sqlite3.c' -r -o $@
 
-temp/bc/extension-functions.bc: deps/$(EXTENSION_FUNCTIONS) src/c/config.h
+temp/bc/extension-functions.bc: deps/$(EXTENSION_FUNCTIONS) src/c/sqlite_cfg.h
 	mkdir -p temp/bc
 	$(EMCC) $(CFLAGS) -s LINKABLE=1 'deps/$(EXTENSION_FUNCTIONS)' -r -o $@
 
-temp/bc/wasmhelpers.bc: src/c/wasmhelpers.c src/c/config.h
+temp/bc/wasmhelpers.bc: src/c/wasmhelpers.c src/c/sqlite_cfg.h
 	mkdir -p temp/bc
 	$(EMCC) $(CFLAGS) -s LINKABLE=1 src/c/wasmhelpers.c -r -o $@
 
