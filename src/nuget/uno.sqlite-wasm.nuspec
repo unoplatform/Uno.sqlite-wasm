@@ -2,10 +2,10 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata minClientVersion="5.0.0">
     <id>Uno.sqlite-wasm</id>
-    <version>3.34.1.4</version>
+    <version>3.40.0.1</version>
     <title>Uno SQLite for WebAssembly</title>
-    <authors>nventive</authors>
-    <owners>nventive</owners>
+    <authors>Uno Platform</authors>
+    <owners>unoplatform</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://github.com/unoplatform/uno.sqlite-wasm</projectUrl>
     <iconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</iconUrl>
