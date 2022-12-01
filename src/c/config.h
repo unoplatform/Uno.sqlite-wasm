@@ -10,3 +10,4 @@
 #define SQLITE_THREADSAFE               0
 #define SQLITE_USE_URI                  1
 #define SQLITE_ENABLE_COLUMN_METADATA   1
+#define SQLITE_ENABLE_SNAPSHOT          1
