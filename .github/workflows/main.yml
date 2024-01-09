@@ -103,7 +103,7 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1.7.2
       with:
-        dotnet-version:  6.0.400
+        dotnet-version:  8.0.100
         
     - name: Build nuget
       run: |
@@ -126,7 +126,8 @@ jobs:
         name: Release
 
     steps:
-    
+    - uses: actions/checkout@v3
+
     - name: Download package
       uses: actions/download-artifact@v2
       with:
@@ -136,7 +137,16 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
       with:
-          dotnet-version: '3.1.x'
+        dotnet-version:  8.0.100
+
+    - name: Setup SignClient
+      run: |
+        dotnet tool install --tool-path build SignClient
+
+    - name: SignClient
+      shell: pwsh
+      run: |
+        build/SignClient sign -i $GITHUB_WORKSPACE/artifacts/*.nupkg -c build/SignClient.json -r "${{ secrets.UNO_PLATFORM_CODESIGN_USERNAME }}" -s "${{ secrets.UNO_PLATFORM_CODESIGN_SECRET }}" -n "sqlite-wasm" -d "sqlite-wasm" -u "https://github.dev/unoplatform/Uno.sqlite-wasm"
 
     - name: NuGet Push
       shell: pwsh
