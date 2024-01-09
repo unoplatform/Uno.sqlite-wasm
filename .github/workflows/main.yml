@@ -146,9 +146,9 @@ jobs:
     - name: SignClient
       shell: pwsh
       run: |
-        build/SignClient sign -i $GITHUB_WORKSPACE/artifacts/*.nupkg -c build/SignClient.json -r "${{ secrets.UNO_PLATFORM_CODESIGN_USERNAME }}" -s "${{ secrets.UNO_PLATFORM_CODESIGN_SECRET }}" -n "sqlite-wasm" -d "sqlite-wasm" -u "https://github.dev/unoplatform/Uno.sqlite-wasm"
+        build/SignClient sign -i artifacts/*.nupkg -c build/SignClient.json -r "${{ secrets.UNO_PLATFORM_CODESIGN_USERNAME }}" -s "${{ secrets.UNO_PLATFORM_CODESIGN_SECRET }}" -n "sqlite-wasm" -d "sqlite-wasm" -u "https://github.dev/unoplatform/Uno.sqlite-wasm"
 
     - name: NuGet Push
       shell: pwsh
       run: |
-        dotnet nuget push artifacts\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_ORG_API_KEY }}
+        dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_ORG_API_KEY }}
