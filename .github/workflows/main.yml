@@ -26,7 +26,7 @@ jobs:
     name: 'Build (emsdk:${{ matrix.EMSCRIPTEN_VERSION }} Threads:${{ matrix.EMSCRIPTEN_THREADS }} SIMD:${{ matrix.EMSCRIPTEN_SIMD }})'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
@@ -94,7 +94,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Merge Artifacts
       uses: actions/upload-artifact/merge@v4
@@ -113,10 +113,15 @@ jobs:
       with:
         dotnet-version:  8.0.100
         
+    - name: List files
+      run: |
+        Get-ChildItem -Recurse ./native-artifacts
+        
     - name: Build nuget
       run: |
-        & .\src\nuget\nuget.exe pack src\nuget\uno.sqlite-wasm.nuspec -OutputDirectory "$env:GITHUB_WORKSPACE\artifacts"
-
+        cd src\nuget
+        & .\nuget.exe pack uno.sqlite-wasm.nuspec -OutputDirectory "$env:GITHUB_WORKSPACE\artifacts"
+  
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
@@ -134,7 +139,7 @@ jobs:
         name: Release
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Download package
       uses: actions/download-artifact@v4
