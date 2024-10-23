@@ -115,7 +115,7 @@ jobs:
         
     - name: Build nuget
       run: |
-        $GITHUB_WORKSPACE/src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -OutputDirectory "$GITHUB_WORKSPACE/artifacts"
+        $env:GITHUB_WORKSPACE/src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -OutputDirectory "$env:GITHUB_WORKSPACE/artifacts"
 
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
