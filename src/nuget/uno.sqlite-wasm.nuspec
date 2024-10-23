@@ -15,7 +15,7 @@
 
     <contentFiles>
       <!-- Include Assets as Embedded Resource and Content so that the Uno.Wasm.Bootstrap picks those up -->
-      <files include="any/any/**/*.bc" buildAction="Content" />
+      <files include="any/any/**/*.a" buildAction="Content" />
     </contentFiles>
   </metadata>
   <files>
