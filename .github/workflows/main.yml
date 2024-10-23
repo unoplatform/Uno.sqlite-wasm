@@ -79,9 +79,9 @@ jobs:
           mkdir -p $ARTIFACTS_PATH
           make
           # Use the multi-version convention https://github.com/unoplatform/uno.wasm.bootstrap#static-linking-multi-version-support
-          SQLITE3_DIST_PATH=$ARTIFACTS_PATH/native/sqlite3.bc/$EMSCRIPTEN_VERSION$FEATURES_CONFIGURATION
+          SQLITE3_DIST_PATH=$ARTIFACTS_PATH/native/sqlite3.o/$EMSCRIPTEN_VERSION$FEATURES_CONFIGURATION
           mkdir -p $SQLITE3_DIST_PATH
-          cp dist/sqlite3.bc $SQLITE3_DIST_PATH
+          cp dist/sqlite3.o $SQLITE3_DIST_PATH
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
