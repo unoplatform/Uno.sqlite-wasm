@@ -14,7 +14,7 @@ EXPORTED_FUNCTIONS_JSON = src/exported_functions.json
 
 # temporary files
 
-BITCODE_FILES = temp/o/sqlite3.o temp/o/extension-functions.o temp/o/wasmhelpers.o
+BITCODE_FILES = temp/a/sqlite3.a temp/a/extension-functions.a temp/a/wasmhelpers.a
 
 # build options
 EMCC = emcc
@@ -96,20 +96,20 @@ deps/$(EXTENSION_FUNCTIONS): cache/$(EXTENSION_FUNCTIONS)
 clean-temp:
 	rm -rf temp
 
-temp/o/shell.o: deps/$(SQLITE_AMALGAMATION) src/c/sqlite_cfg.h
-	mkdir -p temp/o
+temp/a/shell.a: deps/$(SQLITE_AMALGAMATION) src/c/sqlite_cfg.h
+	mkdir -p temp/a
 	$(EMCC) $(CFLAGS) 'deps/$(SQLITE_AMALGAMATION)/shell.c' -r -o $@
 
-temp/o/sqlite3.o: deps/$(SQLITE_AMALGAMATION) src/c/sqlite_cfg.h
-	mkdir -p temp/o
+temp/a/sqlite3.a: deps/$(SQLITE_AMALGAMATION) src/c/sqlite_cfg.h
+	mkdir -p temp/a
 	$(EMCC) $(CFLAGS) -s LINKABLE=1 'deps/$(SQLITE_AMALGAMATION)/sqlite3.c' -r -o $@
 
-temp/o/extension-functions.o: deps/$(EXTENSION_FUNCTIONS) src/c/sqlite_cfg.h
-	mkdir -p temp/o
+temp/a/extension-functions.a: deps/$(EXTENSION_FUNCTIONS) src/c/sqlite_cfg.h
+	mkdir -p temp/a
 	$(EMCC) $(CFLAGS) -s LINKABLE=1 'deps/$(EXTENSION_FUNCTIONS)' -r -o $@
 
-temp/o/wasmhelpers.o: src/c/wasmhelpers.c src/c/sqlite_cfg.h
-	mkdir -p temp/o
+temp/a/wasmhelpers.a: src/c/wasmhelpers.c src/c/sqlite_cfg.h
+	mkdir -p temp/a
 	$(EMCC) $(CFLAGS) -s LINKABLE=1 src/c/wasmhelpers.c -r -o $@
 
 ## debug
@@ -118,9 +118,9 @@ clean-debug:
 	rm -rf debug
 
 .PHONY: debug
-debug: debug/sqlite3.o
+debug: debug/sqlite3.a
 
-debug/sqlite3.o: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+debug/sqlite3.a: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p debug
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DEBUG) $(BITCODE_FILES) -r -o $@
 
@@ -130,11 +130,11 @@ clean-dist:
 	rm -rf dist
 
 .PHONY: dist
-dist: dist/sqlite3.o
+dist: dist/sqlite3.a
 
 # The name of this binary is aligned with the SQLitePCLRaw.bundle_sqlite3 
 # imports, which uses "sqlite3".
 # See https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/custom-versions?tabs=netcore-cli#bundles for more details.
-dist/sqlite3.o: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+dist/sqlite3.a: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p dist
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DIST) $(BITCODE_FILES) -r -o $@
