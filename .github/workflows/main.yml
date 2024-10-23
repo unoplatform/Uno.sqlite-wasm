@@ -80,7 +80,7 @@ jobs:
           mkdir -p $SQLITE3_DIST_PATH
           cp dist/sqlite3.bc $SQLITE3_DIST_PATH
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: sqlite-binaries
@@ -95,7 +95,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Download binaries
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: sqlite-binaries
         path: ./native-artifacts
@@ -109,7 +109,7 @@ jobs:
       run: |
         mono $GITHUB_WORKSPACE/src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -OutputDirectory "$GITHUB_WORKSPACE/artifacts"
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
         name: nuget
@@ -129,7 +129,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Download package
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: nuget
         path: artifacts
