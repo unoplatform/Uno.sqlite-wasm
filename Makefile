@@ -118,9 +118,9 @@ clean-debug:
 	rm -rf debug
 
 .PHONY: debug
-debug: debug/sqlite3.o
+debug: debug/sqlite3.a
 
-debug/sqlite3.o: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
+debug/sqlite3.a: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p debug
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DEBUG) $(BITCODE_FILES) -r -o $@
 
@@ -130,7 +130,7 @@ clean-dist:
 	rm -rf dist
 
 .PHONY: dist
-dist: dist/sqlite3.o
+dist: dist/sqlite3.a
 
 # The name of this binary is aligned with the SQLitePCLRaw.bundle_sqlite3 
 # imports, which uses "sqlite3".
