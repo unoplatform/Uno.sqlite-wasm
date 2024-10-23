@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata minClientVersion="5.0.0">
     <id>Uno.sqlite-wasm</id>
-    <version>3.40.0.2</version>
+    <version>3.40.0.3</version>
     <title>Uno SQLite for WebAssembly</title>
     <authors>Uno Platform</authors>
     <owners>unoplatform</owners>
