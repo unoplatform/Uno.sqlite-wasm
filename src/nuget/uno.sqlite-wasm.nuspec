@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/unoplatform/uno.sqlite-wasm</projectUrl>
     <iconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</iconUrl>
     <description>The SQLite database engine for WebAssembly</description>
-    <copyright>Copyright (C) 2015-2022 Uno Platform inc. - all rights reserved</copyright>
+    <copyright>Copyright (C) 2015-2024 Uno Platform inc. - all rights reserved</copyright>
     <repository type="git" url="https://github.com/unoplatform/Uno.sqlite-wasm.git" />
 
     <contentFiles>
