@@ -13,8 +13,7 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
-    container: 'unoplatform/wasm-build:2.0'
+    runs-on: ubuntu-latest
     
     strategy:
       matrix:
@@ -28,7 +27,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20      
+
       - name: Set Variable from current Commit
         run: |
           set -e
@@ -76,28 +79,33 @@ jobs:
           mkdir -p $ARTIFACTS_PATH
           make
           # Use the multi-version convention https://github.com/unoplatform/uno.wasm.bootstrap#static-linking-multi-version-support
-          SQLITE3_DIST_PATH=$ARTIFACTS_PATH/native/sqlite3.bc/$EMSCRIPTEN_VERSION$FEATURES_CONFIGURATION
+          SQLITE3_DIST_PATH=$ARTIFACTS_PATH/native/sqlite3.a/$EMSCRIPTEN_VERSION$FEATURES_CONFIGURATION
           mkdir -p $SQLITE3_DIST_PATH
-          cp dist/sqlite3.bc $SQLITE3_DIST_PATH
+          cp dist/sqlite3.a $SQLITE3_DIST_PATH
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: sqlite-binaries
+          name: sqlite-binaries-${{ matrix.EMSCRIPTEN_VERSION }}-${{ matrix.EMSCRIPTEN_THREADS }}-${{ matrix.EMSCRIPTEN_SIMD }}
           path: ./artifacts
 
   package:
     needs: build
-    runs-on: ubuntu-latest
-    container: 'unoplatform/wasm-build:2.0'
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
 
+    - name: Merge Artifacts
+      uses: actions/upload-artifact/merge@v4
+      with:
+        name: sqlite-binaries-merged
+        pattern: sqlite-binaries-*
+
     - name: Download binaries
       uses: actions/download-artifact@v4
       with:
-        name: sqlite-binaries
+        name: sqlite-binaries-merged
         path: ./native-artifacts
           
     - name: Setup .NET SDK
@@ -107,7 +115,7 @@ jobs:
         
     - name: Build nuget
       run: |
-        mono $GITHUB_WORKSPACE/src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -OutputDirectory "$GITHUB_WORKSPACE/artifacts"
+        & .\src\nuget\nuget.exe pack src\nuget\uno.sqlite-wasm.nuspec -OutputDirectory "$env:GITHUB_WORKSPACE\artifacts"
 
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
