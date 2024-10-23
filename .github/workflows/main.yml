@@ -13,8 +13,7 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
-    container: 'unoplatform/wasm-build:2.0'
+    runs-on: ubuntu-latest
     
     strategy:
       matrix:
@@ -28,7 +27,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20      
+
       - name: Set Variable from current Commit
         run: |
           set -e
