@@ -19,7 +19,7 @@
     </contentFiles>
   </metadata>
   <files>
-    <file src="../../native-artifacts/**/*" target="buildTransitive" />
+    <file src="./native-artifacts/**/*" target="buildTransitive" />
     <file src="Uno.sqlite-wasm.targets" target="buildTransitive" />
   </files>
 </package>
