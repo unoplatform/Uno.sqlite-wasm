@@ -91,8 +91,7 @@ jobs:
 
   package:
     needs: build
-    runs-on: ubuntu-latest
-    container: 'unoplatform/wasm-build:2.0'
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -116,7 +115,7 @@ jobs:
         
     - name: Build nuget
       run: |
-        mono $GITHUB_WORKSPACE/src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -OutputDirectory "$GITHUB_WORKSPACE/artifacts"
+        $GITHUB_WORKSPACE/src/nuget/nuget.exe pack src/nuget/uno.sqlite-wasm.nuspec -OutputDirectory "$GITHUB_WORKSPACE/artifacts"
 
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
