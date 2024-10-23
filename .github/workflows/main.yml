@@ -86,7 +86,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
-          name: sqlite-binaries
+          name: sqlite-binaries-${{ matrix.EMSCRIPTEN_VERSION }}-${{ matrix.EMSCRIPTEN_THREADS }}-${{ matrix.EMSCRIPTEN_SIMD }}
           path: ./artifacts
 
   package:
@@ -97,10 +97,16 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Merge Artifacts
+      uses: actions/upload-artifact/merge@v4
+      with:
+        name: sqlite-binaries-merged
+        pattern: sqlite-binaries-*
+
     - name: Download binaries
       uses: actions/download-artifact@v4
       with:
-        name: sqlite-binaries
+        name: sqlite-binaries-merged
         path: ./native-artifacts
           
     - name: Setup .NET SDK
