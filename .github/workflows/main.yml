@@ -113,10 +113,14 @@ jobs:
       with:
         dotnet-version:  8.0.100
         
+    - name: List files
+      run: |
+        Get-ChildItem -Recurse ./native-artifacts
+        
     - name: Build nuget
       run: |
         & .\src\nuget\nuget.exe pack src\nuget\uno.sqlite-wasm.nuspec -OutputDirectory "$env:GITHUB_WORKSPACE\artifacts"
-
+  
     - uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
