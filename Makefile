@@ -138,4 +138,4 @@ dist: dist/sqlite3.a
 dist/sqlite3.a: $(BITCODE_FILES) $(EXPORTED_FUNCTIONS_JSON)
 	mkdir -p dist
 	$(EMCC) $(EMFLAGS) $(EMFLAGS_DIST) $(BITCODE_FILES) -r -o sqlite3.o
-	ar rcs sqlite3.a sqlite3.o
+	ar rcs dist/sqlite3.a sqlite3.o
